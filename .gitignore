@@ -1,0 +1,23 @@
+# Secrets / local env
+.env
+.env.*
+*.pem
+*.key
+*.crt
+kubeconfig*
+*-credentials*
+*.token
+
+# Terraform (if used)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# Helm
+charts/*.tgz
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
