@@ -1,7 +1,7 @@
 # platform-engineering-bootcamp
 
 Building an internal developer platform from scratch on Kubernetes, one component
-at a time, during a Platform Engineering Bootcamp (Oct 2026 – ~Apr 2027).
+at a time, during a Platform Engineering Bootcamp (Oct 2026 – May 2027).
 
 Everything here is my own work. Course slides and instructor material are not published.
 
