@@ -1,6 +1,8 @@
-# 02 — fluxcd
+---
+title: "02 · FluxCD"
+---
 
-**Status:** not started · **Session dates:** <yyyy-mm-dd>
+**Status:** not started · **Session dates:** yyyy-mm-dd
 
 ## What I built
 

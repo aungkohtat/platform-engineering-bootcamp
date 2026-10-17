@@ -1,3 +1,0 @@
-# Pinned below MkDocs 2.0, which drops plugin/theme compatibility with Material.
-mkdocs==1.6.1
-mkdocs-material==9.7.7

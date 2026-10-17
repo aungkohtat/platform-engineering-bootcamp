@@ -1,6 +1,8 @@
-# 03 — gitlab
+---
+title: "06 · OpenBao"
+---
 
-**Status:** not started · **Session dates:** <yyyy-mm-dd>
+**Status:** not started · **Session dates:** yyyy-mm-dd
 
 ## What I built
 

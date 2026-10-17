@@ -1,6 +1,8 @@
-# 04 — keycloak
+---
+title: "03 · GitLab"
+---
 
-**Status:** not started · **Session dates:** <yyyy-mm-dd>
+**Status:** not started · **Session dates:** yyyy-mm-dd
 
 ## What I built
 

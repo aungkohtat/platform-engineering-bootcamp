@@ -12,4 +12,3 @@ repos:
       - id: detect-private-key
       - id: check-yaml
         args: [--allow-multiple-documents]
-        exclude: ^mkdocs\.yml$  # python/name tags; validated by mkdocs build --strict

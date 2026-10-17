@@ -28,5 +28,7 @@ charts/*.tgz
 mise.local.toml
 .mise.local.toml
 
-# MkDocs build output
-site/
+# Astro / Starlight
+node_modules/
+dist/
+.astro/

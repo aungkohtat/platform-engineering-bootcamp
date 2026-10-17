@@ -7,8 +7,10 @@ Everything here is my own work. Course slides and instructor material are not pu
 
 📖 **Site:** https://aungkohtat.github.io/platform-engineering-bootcamp/
 
-Notes live in [`docs/`](docs/): start with [What is platform engineering?](docs/00-intro-platform-engineering.md),
-and module progress is tracked on the [home page](docs/index.md).
+Built with [Astro Starlight](https://starlight.astro.build/). Notes live in
+[`src/content/docs/`](src/content/docs/): start with
+[What is platform engineering?](src/content/docs/00-intro-platform-engineering.md); module
+progress is tracked on the [home page](src/content/docs/index.mdx).
 
 ## Local setup
 
@@ -27,9 +29,10 @@ work clusters are unreachable. Machine-local overrides go in `.envrc.local` (git
 
 - **Own cluster.** Use a dedicated cluster name (e.g. `kind-bootcamp`) and confirm
   `kubectl config current-context` before every apply. Never point this repo at a work cluster.
-- **Notes after doing.** Each module README (`docs/modules/`) is filled in after the lab, from the template in `templates/`.
-- **Site.** Merging to `main` publishes `docs/` to GitHub Pages. Preview locally with
-  `pip install -r requirements-docs.txt && mkdocs serve`.
+- **Notes after doing.** Each module page (`src/content/docs/modules/`) is filled in after the lab, from the template in `templates/`.
+- **Site.** Merging to `main` publishes the site to GitHub Pages. Preview locally with
+  `npm ci && npm run dev`. Internal links are absolute and include the base path
+  (`/platform-engineering-bootcamp/...`); the build fails on a broken one.
 - **No secrets in git.** `pre-commit` runs gitleaks; install with `pre-commit install`.
   OpenBao and Keycloak dev credentials stay in local env files, which are gitignored.
 - The GitOps layout (`clusters/`, `infrastructure/`, `apps/`) is added when the FluxCD module starts.

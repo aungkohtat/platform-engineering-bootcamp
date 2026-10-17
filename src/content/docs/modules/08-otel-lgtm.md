@@ -1,6 +1,8 @@
-# 08 — otel-lgtm
+---
+title: "08 · OpenTelemetry + LGTM"
+---
 
-**Status:** not started · **Session dates:** <yyyy-mm-dd>
+**Status:** not started · **Session dates:** yyyy-mm-dd
 
 ## What I built
 
