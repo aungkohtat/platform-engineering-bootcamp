@@ -5,6 +5,8 @@ at a time, during a Platform Engineering Bootcamp (Oct 2026 – May 2027).
 
 Everything here is my own work. Course slides and instructor material are not published.
 
+Start here: [What is platform engineering?](docs/00-intro-platform-engineering.md)
+
 ## Platform
 
 | # | Module | Component | Status |
