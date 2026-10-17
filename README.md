@@ -26,6 +26,19 @@ Start here: [What is platform engineering?](docs/00-intro-platform-engineering.m
 
 Module order follows the component list, not necessarily the session order.
 
+## Local setup
+
+```bash
+direnv allow            # .envrc: bootcamp-only KUBECONFIG at .kube/bootcamp.yaml
+mise install            # .mise.toml: pinned kubectl, kind, helm, flux, cilium, kyverno, bao...
+colima start --cpu 6 --memory 10 --disk 60
+kind create cluster --name bootcamp
+kubectl config current-context   # must print kind-bootcamp
+```
+
+Inside this repo `kubectl`, `k9s`, `helm` and `flux` only see the bootcamp kubeconfig, so
+work clusters are unreachable. Machine-local overrides go in `.envrc.local` (gitignored).
+
 ## Working rules
 
 - **Own cluster.** Use a dedicated cluster name (e.g. `kind-bootcamp`) and confirm

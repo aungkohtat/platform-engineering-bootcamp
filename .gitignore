@@ -21,3 +21,9 @@ charts/*.tgz
 .DS_Store
 .idea/
 .vscode/
+
+# Bootcamp local state
+.kube/
+.envrc.local
+mise.local.toml
+.mise.local.toml
