@@ -1,6 +1,8 @@
-# 06 — openbao
+---
+title: "09 · Backstage"
+---
 
-**Status:** not started · **Session dates:** <yyyy-mm-dd>
+**Status:** not started · **Session dates:** yyyy-mm-dd
 
 ## What I built
 

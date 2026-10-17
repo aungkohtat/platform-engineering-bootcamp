@@ -1,6 +1,8 @@
-# 00 — kubernetes
+---
+title: "00 · Kubernetes"
+---
 
-**Status:** not started · **Session dates:** <yyyy-mm-dd>
+**Status:** not started · **Session dates:** yyyy-mm-dd
 
 ## What I built
 

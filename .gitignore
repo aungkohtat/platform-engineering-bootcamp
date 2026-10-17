@@ -27,3 +27,8 @@ charts/*.tgz
 .envrc.local
 mise.local.toml
 .mise.local.toml
+
+# Astro / Starlight
+node_modules/
+dist/
+.astro/
