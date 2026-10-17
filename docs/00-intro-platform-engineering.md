@@ -96,16 +96,16 @@ platform usually provides. Mapped to this bootcamp:
 
 | Capability | Popular tools | Bootcamp module |
 |---|---|---|
-| Compute / orchestration | **Kubernetes**, EKS/GKE/AKS | [00](../modules/00-kubernetes/) |
-| Networking & service mesh | **Cilium**, Istio, Linkerd | [01](../modules/01-cilium/) |
-| GitOps / continuous delivery | **FluxCD**, Argo CD | [02](../modules/02-fluxcd/) |
-| Source control & CI | **GitLab**, GitHub Actions, Jenkins | [03](../modules/03-gitlab/) |
-| Identity & access | **Keycloak**, Dex, Okta | [04](../modules/04-keycloak/) |
-| Policy-as-code | **Kyverno**, OPA Gatekeeper | [05](../modules/05-kyverno/) |
-| Secrets | **OpenBao**, HashiCorp Vault, External Secrets Operator | [06](../modules/06-openbao/) |
-| Runtime security | **Falco**, Tetragon | [07](../modules/07-falco/) |
-| Observability | **OpenTelemetry**, Prometheus, Grafana, Loki, Tempo, Mimir | [08](../modules/08-otel-lgtm/) |
-| Developer portal | **Backstage**, Port, Cortex | [09](../modules/09-backstage/) |
+| Compute / orchestration | **Kubernetes**, EKS/GKE/AKS | [00](modules/00-kubernetes/README.md) |
+| Networking & service mesh | **Cilium**, Istio, Linkerd | [01](modules/01-cilium/README.md) |
+| GitOps / continuous delivery | **FluxCD**, Argo CD | [02](modules/02-fluxcd/README.md) |
+| Source control & CI | **GitLab**, GitHub Actions, Jenkins | [03](modules/03-gitlab/README.md) |
+| Identity & access | **Keycloak**, Dex, Okta | [04](modules/04-keycloak/README.md) |
+| Policy-as-code | **Kyverno**, OPA Gatekeeper | [05](modules/05-kyverno/README.md) |
+| Secrets | **OpenBao**, HashiCorp Vault, External Secrets Operator | [06](modules/06-openbao/README.md) |
+| Runtime security | **Falco**, Tetragon | [07](modules/07-falco/README.md) |
+| Observability | **OpenTelemetry**, Prometheus, Grafana, Loki, Tempo, Mimir | [08](modules/08-otel-lgtm/README.md) |
+| Developer portal | **Backstage**, Port, Cortex | [09](modules/09-backstage/README.md) |
 | Infrastructure provisioning | Terraform / OpenTofu, Crossplane, Pulumi | — |
 | Platform orchestrator | Humanitec, Kratix, KubeVela | — |
 

@@ -27,3 +27,6 @@ charts/*.tgz
 .envrc.local
 mise.local.toml
 .mise.local.toml
+
+# MkDocs build output
+site/
