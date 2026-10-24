@@ -1,0 +1,84 @@
+# -*- mode: ruby -*-
+# PE Bootcamp Phase 1 lab: 3 control planes and 3 workers on VirtualBox, bridged onto
+# the home LAN so the VIP and Cilium's LoadBalancer IPs are reachable from any device.
+#
+# API server HA follows the course: keepalived floats one VIP straight onto :6443 of
+# whichever control plane has a healthy apiserver. No HAProxy, no kube-proxy.
+#
+# Every address below must sit OUTSIDE the router's DHCP pool. Override per run, e.g.
+#   LAN=192.168.0 BRIDGE="en7: USB 10/100/1000 LAN" vagrant up
+
+BOX         = "bento/ubuntu-26.04"
+LAN         = ENV.fetch("LAN", "192.168.1")
+VIP         = "#{LAN}.10"
+VIP_NAME    = "kyl-vip"
+K8S_VERSION = ENV.fetch("K8S_VERSION", "1.36.5")  # newest minor Cilium 1.20 and Envoy Gateway v1.9 both test
+
+# Vagrant uses the first name VirtualBox recognises. List names with:
+#   VBoxManage list bridgedifs | grep ^Name
+BRIDGE = ENV["BRIDGE"] ? [ENV["BRIDGE"]] : ["en0: Wi-Fi", "en0: Wi-Fi (AirPort)"]
+
+# ~18 GB total: sized for a 32 GB host. The course suggests 4 GB / 8 GB, which needs 36 GB.
+CP_CPUS   = ENV.fetch("CP_CPUS", "2").to_i
+CP_MEMORY = ENV.fetch("CP_MEMORY", "3072").to_i
+WK_CPUS   = ENV.fetch("WK_CPUS", "2").to_i
+WK_MEMORY = ENV.fetch("WK_MEMORY", "3072").to_i
+
+CONTROL_PLANES = [
+  { name: "kyl-cp1", ip: "#{LAN}.11", priority: 150 },
+  { name: "kyl-cp2", ip: "#{LAN}.12", priority: 140 },
+  { name: "kyl-cp3", ip: "#{LAN}.13", priority: 130 },
+]
+WORKERS = [
+  { name: "kyl-w1", ip: "#{LAN}.14" },
+  { name: "kyl-w2", ip: "#{LAN}.15" },
+  { name: "kyl-w3", ip: "#{LAN}.16" },
+]
+
+HOSTS = ([{ name: VIP_NAME, ip: VIP }] + CONTROL_PLANES + WORKERS)
+  .map { |n| "#{n[:ip]} #{n[:name]}" }.join("\n")
+
+Vagrant.configure("2") do |config|
+  config.vm.box = BOX
+  config.vm.box_check_update = false
+  # No shared folder: nothing here needs Guest Additions.
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  def node(config, n, cpus, memory)
+    config.vm.define n[:name] do |m|
+      m.vm.hostname = n[:name]
+      # Static IP on the LAN. The NAT adapter Vagrant always adds keeps the default
+      # route, so the VMs reach the internet through the host either way.
+      m.vm.network "public_network", ip: n[:ip], netmask: "255.255.255.0", bridge: BRIDGE
+      m.vm.provider "virtualbox" do |vb|
+        vb.name   = n[:name]
+        vb.cpus   = cpus
+        vb.memory = memory
+        vb.linked_clone = true
+      end
+      m.vm.provision "common", type: "shell", path: "scripts/common.sh",
+        env: { "NODE_IP" => n[:ip], "K8S_VERSION" => K8S_VERSION, "HOSTS" => HOSTS }
+      yield m if block_given?
+    end
+  end
+
+  CONTROL_PLANES.each do |n|
+    node(config, n, CP_CPUS, CP_MEMORY) do |m|
+      peers = CONTROL_PLANES.reject { |p| p[:name] == n[:name] }.map { |p| p[:ip] }
+      m.vm.provision "keepalived", type: "shell", path: "scripts/keepalived.sh",
+        env: {
+          "NODE_IP"  => n[:ip],
+          "VIP"      => VIP,
+          "PRIORITY" => n[:priority],
+          "STATE"    => n[:name] == "kyl-cp1" ? "MASTER" : "BACKUP",
+          "PEERS"    => peers.join(" "),
+        }
+      if n[:name] == "kyl-cp1"
+        m.vm.provision "kubeadm-config", type: "shell", path: "scripts/kubeadm-config.sh",
+          env: { "NODE_IP" => n[:ip], "VIP_NAME" => VIP_NAME, "K8S_VERSION" => K8S_VERSION }
+      end
+    end
+  end
+
+  WORKERS.each { |n| node(config, n, WK_CPUS, WK_MEMORY) }
+end

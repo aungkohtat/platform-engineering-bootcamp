@@ -1,0 +1,23 @@
+# Lesson 0004: LoadBalancer IPs from a LAN range, announced over ARP by one worker
+# per Service. The range must sit outside the router's DHCP pool.
+apiVersion: cilium.io/v2
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: lan-pool
+spec:
+  blocks:
+    - start: 192.168.1.200
+      stop: 192.168.1.207
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: lan-l2
+spec:
+  # Workers carry the traffic; the control planes already hold the API VIP.
+  nodeSelector:
+    matchExpressions:
+      - key: node-role.kubernetes.io/control-plane
+        operator: DoesNotExist
+  loadBalancerIPs: true
+  externalIPs: true
