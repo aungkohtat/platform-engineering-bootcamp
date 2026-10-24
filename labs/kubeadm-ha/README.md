@@ -48,10 +48,17 @@ LAN. Envoy Gateway serves as ingress on top.
 5. **Check the network adapter name:** `VBoxManage list bridgedifs | grep ^Name`. The
    Vagrantfile tries `en0: Wi-Fi`. If yours differs, run with
    `BRIDGE="<exact name>" vagrant up`.
-6. **Optional: graph every VM in Beszel.** With the Beszel hub running on `mbp`, export
-   its public key before `vagrant up` and each node gets an agent on `<node IP>:45876`:
-   `export BESZEL_KEY="$(ssh-keygen -y -f ~/.local/beszel/beszel_data/id_ed25519)"`.
-   Then add each node in the hub UI by its IP and port `45876`.
+6. **Optional: graph every VM in Beszel.** With the Beszel hub running on `mbp`, create a
+   universal token under **Settings → Tokens**, then export these before `vagrant up`
+   (or put them in the repo's gitignored `.envrc.local`). Each node's agent dials the
+   hub and registers itself under its hostname:
+   ```bash
+   export BESZEL_KEY="$(ssh-keygen -y -f ~/.local/beszel/beszel_data/id_ed25519)"
+   export BESZEL_TOKEN="<universal token>"
+   export BESZEL_HUB_URL="http://192.168.1.120:8090"
+   ```
+   Agents dial the hub, not the other way round: macOS Local Network privacy blocks an
+   unsigned hub running as a background service from opening LAN connections.
 
 > **Wi-Fi vs Ethernet.** Bridging over Wi-Fi works, but VirtualBox has to rewrite MAC
 > addresses to do it. If the VIP or a LoadBalancer IP answers on `mbp` but not from

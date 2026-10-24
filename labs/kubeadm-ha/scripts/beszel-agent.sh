@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 # Every node, optional: a Beszel agent so the hub on the lab host graphs each VM.
-# Runs in SSH mode: the hub dials NODE_IP:45876 and authenticates with its own key.
-# Inputs (from the Vagrantfile): NODE_IP, BESZEL_KEY (the hub's public key).
+# WebSocket mode: the agent dials the hub. The reverse (hub dialing NODE_IP:45876) is
+# blocked when the hub runs on macOS, whose Local Network privacy stops unsigned
+# background services from opening LAN connections.
+# Inputs (from the Vagrantfile): NODE_IP, BESZEL_KEY (the hub's public key),
+# BESZEL_TOKEN (a universal token from the hub), BESZEL_HUB_URL.
 set -euo pipefail
+: "${BESZEL_TOKEN:?set BESZEL_TOKEN to a universal token from the hub}"
+: "${BESZEL_HUB_URL:?set BESZEL_HUB_URL, e.g. http://192.168.1.120:8090}"
 
 VERSION=0.21.0
 ARCH=$(dpkg --print-architecture)
@@ -25,9 +30,10 @@ rm -f "$TARBALL"
 
 id beszel >/dev/null 2>&1 || useradd --system --no-create-home --shell /usr/sbin/nologin beszel
 
-# Bound to the LAN IP only, not the VirtualBox NAT address every VM shares.
+# LISTEN keeps the SSH fallback on the LAN IP only, not the shared VirtualBox NAT address.
 install -m 0640 -o root -g beszel /dev/null /etc/beszel-agent.env
-printf 'KEY="%s"\nLISTEN="%s:45876"\n' "$BESZEL_KEY" "$NODE_IP" >/etc/beszel-agent.env
+printf 'KEY="%s"\nTOKEN="%s"\nHUB_URL="%s"\nLISTEN="%s:45876"\nDATA_DIR=/var/lib/beszel-agent\n' \
+    "$BESZEL_KEY" "$BESZEL_TOKEN" "$BESZEL_HUB_URL" "$NODE_IP" >/etc/beszel-agent.env
 
 cat >/etc/systemd/system/beszel-agent.service <<'EOF'
 [Unit]
@@ -37,6 +43,7 @@ After=network-online.target
 
 [Service]
 User=beszel
+StateDirectory=beszel-agent
 EnvironmentFile=/etc/beszel-agent.env
 ExecStart=/usr/local/bin/beszel-agent
 Restart=on-failure
