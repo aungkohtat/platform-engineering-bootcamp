@@ -2,8 +2,8 @@
 # PE Bootcamp Phase 1 lab: 3 control planes and 3 workers on VirtualBox, bridged onto
 # the home LAN so the VIP and Cilium's LoadBalancer IPs are reachable from any device.
 #
-# API server HA follows the course: keepalived floats one VIP straight onto :6443 of
-# whichever control plane has a healthy apiserver. No HAProxy, no kube-proxy.
+# API server HA goes one step past the course: keepalived floats one VIP onto a control
+# plane, and HAProxy there spreads requests over all three apiservers. No kube-proxy.
 #
 # Every address below must sit OUTSIDE the router's DHCP pool. Override per run, e.g.
 #   LAN=192.168.0 BRIDGE="en7: USB 10/100/1000 LAN" vagrant up
@@ -12,6 +12,7 @@ BOX         = "bento/ubuntu-26.04"
 LAN         = ENV.fetch("LAN", "192.168.1")
 VIP         = "#{LAN}.10"
 VIP_NAME    = "kyl-vip"
+API_PORT    = 8443  # HAProxy on the VIP; each apiserver itself stays on 6443
 K8S_VERSION = ENV.fetch("K8S_VERSION", "1.36.5")  # newest minor Cilium 1.20 and Envoy Gateway v1.9 both test
 
 # Vagrant uses the first name VirtualBox recognises. List names with:
@@ -81,6 +82,8 @@ Vagrant.configure("2") do |config|
   CONTROL_PLANES.each do |n|
     node(config, n, CP_CPUS, CP_MEMORY) do |m|
       peers = CONTROL_PLANES.reject { |p| p[:name] == n[:name] }.map { |p| p[:ip] }
+      m.vm.provision "haproxy", type: "shell", path: "scripts/haproxy.sh",
+        env: { "API_PORT" => API_PORT, "CP_IPS" => CONTROL_PLANES.map { |p| p[:ip] }.join(" ") }
       m.vm.provision "keepalived", type: "shell", path: "scripts/keepalived.sh",
         env: {
           "NODE_IP"  => n[:ip],
@@ -88,10 +91,16 @@ Vagrant.configure("2") do |config|
           "PRIORITY" => n[:priority],
           "STATE"    => n[:name] == "kyl-cp1" ? "MASTER" : "BACKUP",
           "PEERS"    => peers.join(" "),
+          "API_PORT" => API_PORT,
         }
       if n[:name] == "kyl-cp1"
         m.vm.provision "kubeadm-config", type: "shell", path: "scripts/kubeadm-config.sh",
-          env: { "NODE_IP" => n[:ip], "VIP_NAME" => VIP_NAME, "K8S_VERSION" => K8S_VERSION }
+          env: {
+            "NODE_IP"     => n[:ip],
+            "VIP_NAME"    => VIP_NAME,
+            "K8S_VERSION" => K8S_VERSION,
+            "API_PORT"    => API_PORT,
+          }
       end
     end
   end

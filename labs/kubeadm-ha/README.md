@@ -1,16 +1,19 @@
 # PE Bootcamp Phase 1 lab (VirtualBox + Vagrant)
 
 The course's Phase 1 cluster, built on one 32 GB Mac (`mbp`). It has 3 control planes
-and 3 workers bridged onto the home LAN, and keepalived floats one VIP straight onto
-the apiservers. Cilium runs with no kube-proxy and announces LoadBalancer IPs on the
-LAN. Envoy Gateway serves as ingress on top.
+and 3 workers bridged onto the home LAN. keepalived floats one VIP onto a control
+plane, and HAProxy there spreads API requests over all three apiservers. Cilium runs
+with no kube-proxy and announces LoadBalancer IPs on the LAN. Envoy Gateway serves as
+ingress on top.
 
 ```
             Home LAN 192.168.1.0/24 (bridged)        mbp = admin workstation
                               │
-                 kyl-vip 192.168.1.10:6443   ← keepalived, health-checks the apiserver
+                 kyl-vip 192.168.1.10:8443   ← keepalived, health-checks the local HAProxy
                               │
-        kyl-cp1 .11 ────── kyl-cp2 .12 ────── kyl-cp3 .13     apiserver + stacked etcd
+              HAProxy :8443 on each control plane  ← /readyz checks, round robin
+                    ┌─────────┼─────────┐
+        kyl-cp1 .11:6443  kyl-cp2 .12:6443  kyl-cp3 .13:6443  apiserver + stacked etcd
         kyl-w1  .14        kyl-w2  .15        kyl-w3  .16     Cilium (no kube-proxy)
                               │
          LoadBalancer IPs .200–.207 ← Cilium L2 announcement ← Envoy Gateway
@@ -29,8 +32,14 @@ LAN. Envoy Gateway serves as ingress on top.
   total. The course suggests 4 GB control planes and 8 GB workers, which needs 36 GB.
 - **Interfaces.** Each VM also has a VirtualBox NAT adapter for internet access. So
   kubelet, kubeadm and Cilium are pinned to the LAN IP.
-- **keepalived** uses unicast VRRP with no password. The script is a single `curl -f`
-  command, because keepalived doesn't run it through a shell.
+- **HAProxy (not in the course).** The course points keepalived's VIP straight at
+  `:6443`, so one apiserver takes all traffic. Here the VIP lands on HAProxy at `:8443`,
+  which spreads requests over all three and drops an apiserver that fails `/readyz`.
+  **Wherever the course says `kyl-vip:6443` or `k8sServicePort=6443`, use `8443`.**
+  The keepalived-only build is kept as the `keepalived-only` snapshot.
+- **keepalived** uses unicast VRRP with no password. Its check is a single `curl -f` to
+  the local HAProxy, because keepalived doesn't run it through a shell. One dead
+  apiserver no longer moves the VIP; HAProxy routes around it.
 
 ## 0. Before you start (on `mbp`)
 
@@ -95,24 +104,32 @@ exit
 ```
 
 The generated `kubeadm-config.yaml` sets these options:
-- `controlPlaneEndpoint: kyl-vip:6443`
+- `controlPlaneEndpoint: kyl-vip:8443` (HAProxy)
 - `advertiseAddress: 192.168.1.11`
 - `skipPhases: [addon/kube-proxy]`
 
 `init.out` holds two join commands, and the `--certificate-key` expires after 2 hours.
 
-**kubectl from `mbp`.** The VIP is on your LAN, so `mbp` can use it directly:
+**kubectl through the VIP.** Run these on `mbp`:
 ```bash
 grep -q kyl-vip /etc/hosts || echo "192.168.1.10 kyl-vip" | sudo tee -a /etc/hosts
 vagrant ssh kyl-cp1 -c "sudo cat /etc/kubernetes/admin.conf" > kubeconfig
+chmod 600 kubeconfig       # it holds cluster-admin credentials
 export KUBECONFIG=$PWD/kubeconfig
 kubectl get nodes          # kyl-cp1 NotReady: expected, no CNI yet
 ```
 
+> **Over a Wi-Fi bridge, `mbp` itself cannot reach the VIP.** Other LAN devices can.
+> VirtualBox's Wi-Fi bridging answers ARP only for each VM's own address, so from the
+> host `192.168.1.10` stays `(incomplete)` and kubectl times out. Run kubectl from
+> another LAN machine with the same `kubeconfig` and `/etc/hosts` line, or bridge to
+> Ethernet instead. For a quick check from `mbp`, skip the VIP:
+> `kubectl --server https://192.168.1.11:6443 get nodes`.
+
 **Join kyl-cp2 and kyl-cp3.** Use the `--control-plane` command from `init.out`,
 adding each node's own LAN IP:
 ```bash
-vagrant ssh kyl-cp2 -c "sudo kubeadm join kyl-vip:6443 --token <token> \
+vagrant ssh kyl-cp2 -c "sudo kubeadm join kyl-vip:8443 --token <token> \
   --discovery-token-ca-cert-hash sha256:<hash> \
   --control-plane --certificate-key <key> \
   --apiserver-advertise-address 192.168.1.12"
@@ -124,15 +141,21 @@ members can't reach each other.
 **Join the workers** with the plain join command:
 ```bash
 for w in kyl-w1 kyl-w2 kyl-w3; do
-  vagrant ssh $w -c "sudo kubeadm join kyl-vip:6443 --token <token> --discovery-token-ca-cert-hash sha256:<hash>"
+  vagrant ssh $w -c "sudo kubeadm join kyl-vip:8443 --token <token> --discovery-token-ca-cert-hash sha256:<hash>"
 done
 ```
 
-If more than 2 hours have passed, generate fresh credentials on kyl-cp1:
+If more than 2 hours have passed, or `init.out` is lost, generate fresh credentials on
+kyl-cp1. Pass `--config`: without it, `upload-certs` can time out bootstrapping the
+admin user.
 ```bash
-sudo kubeadm init phase upload-certs --upload-certs
-kubeadm token create --print-join-command
+sudo kubeadm init phase upload-certs --upload-certs --config kubeadm-config.yaml
+sudo kubeadm token create --print-join-command
 ```
+
+**Never re-run `kubeadm init` to get the join commands back.** On an initialised node
+it fails its preflight checks, and `| tee init.out` overwrites the file with the
+failure. Check `kubectl get nodes` first.
 
 **Check your win:**
 ```bash
@@ -144,6 +167,9 @@ kubectl -n kube-system exec etcd-kyl-cp1 -- etcdctl \
   member list -w table           # 3 members, all started
 kubectl get --raw /healthz       # ok
 kubectl -n kube-system get ds kube-proxy   # NotFound: correct
+
+# HAProxy on the VIP holder sees all three apiservers as UP
+vagrant ssh kyl-cp1 -c "curl -s 'http://127.0.0.1:8404/stats;csv' | cut -d, -f1,2,18 | grep k8s-api"
 ```
 
 ## Lesson 0003: Cilium, the kube-proxy-free CNI

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Control planes only: keepalived floats the VIP onto a control plane whose local
-# kube-apiserver answers /healthz (course lesson 0002).
-# Inputs: NODE_IP, VIP, PRIORITY, STATE, PEERS ("ip ip").
+# HAProxy can reach a healthy kube-apiserver (course lesson 0002, plus HAProxy).
+# Inputs: NODE_IP, VIP, PRIORITY, STATE, PEERS ("ip ip"), API_PORT (HAProxy's port).
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
@@ -23,9 +23,12 @@ done
 # The check is run directly, not through a shell, so it must be a single command.
 # -f makes HTTP errors fail; without it curl exits 0 on a 500.
 #
+# The check goes through the local HAProxy, so one dead apiserver does not move the VIP:
+# HAProxy routes around it. The VIP moves when this node's HAProxy is down or has no
+# healthy backend left.
+#
 # weight -20 instead of a hard fault: before kubeadm init every check fails, every
 # priority drops by the same 20, and kyl-cp1 still wins the VIP, so init can reach it.
-# Once running, a failed apiserver drops a node below the next one and the VIP moves.
 #
 # Unicast VRRP: multicast over a Wi-Fi bridge is unreliable.
 cat >/etc/keepalived/keepalived.conf <<EOF
@@ -36,7 +39,7 @@ global_defs {
 }
 
 vrrp_script chk_apiserver {
-    script "/usr/bin/curl -sfk --max-time 2 https://127.0.0.1:6443/healthz"
+    script "/usr/bin/curl -sfk --max-time 2 https://127.0.0.1:${API_PORT}/healthz"
     interval 2
     weight -20
     fall 2

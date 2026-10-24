@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # kyl-cp1 only: write the kubeadm config used once by `kubeadm init`.
 # Generated here so the IPs and version come from the Vagrantfile alone.
-# Inputs: NODE_IP, VIP_NAME, K8S_VERSION.
+# Inputs: NODE_IP, VIP_NAME, K8S_VERSION, API_PORT (HAProxy's port on the VIP).
 set -euo pipefail
 
 cat >/home/vagrant/kubeadm-config.yaml <<EOF
@@ -21,7 +21,8 @@ skipPhases:
 apiVersion: kubeadm.k8s.io/v1beta4
 kind: ClusterConfiguration
 kubernetesVersion: v${K8S_VERSION}
-controlPlaneEndpoint: "${VIP_NAME}:6443"
+# HAProxy on the VIP, not an apiserver: every client is spread over all three.
+controlPlaneEndpoint: "${VIP_NAME}:${API_PORT}"
 networking:
   # Must not overlap VirtualBox NAT (10.0.2.0/24) or the LAN.
   podSubnet: 10.244.0.0/16
