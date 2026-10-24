@@ -70,6 +70,8 @@ apt-mark unhold kubelet kubeadm kubectl >/dev/null 2>&1 || true
 apt-get install -y -q --allow-downgrades \
     "kubelet=${PKG_VERSION}" "kubeadm=${PKG_VERSION}" "kubectl=${PKG_VERSION}"
 apt-mark hold kubelet kubeadm kubectl
+# kubeadm no longer depends on cri-tools, so crictl has to be asked for by name.
+apt-get install -y -q cri-tools
 
 # VirtualBox gives every VM the same NAT address (10.0.2.15) on the first NIC.
 # Without this the kubelet registers that address and pod traffic between nodes breaks.
