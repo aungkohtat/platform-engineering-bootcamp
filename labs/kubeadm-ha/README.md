@@ -106,6 +106,8 @@ exit
 The generated `kubeadm-config.yaml` sets these options:
 - `controlPlaneEndpoint: kyl-vip:8443` (HAProxy)
 - `advertiseAddress: 192.168.1.11`
+- `apiServer.certSANs: [192.168.1.10]`. kubeadm only adds the endpoint's name, and
+  Cilium reaches the API by the VIP's IP.
 - `skipPhases: [addon/kube-proxy]`
 
 `init.out` holds two join commands, and the `--certificate-key` expires after 2 hours.
@@ -113,18 +115,26 @@ The generated `kubeadm-config.yaml` sets these options:
 **kubectl through the VIP.** Run these on `mbp`:
 ```bash
 grep -q kyl-vip /etc/hosts || echo "192.168.1.10 kyl-vip" | sudo tee -a /etc/hosts
-vagrant ssh kyl-cp1 -c "sudo cat /etc/kubernetes/admin.conf" > kubeconfig
-chmod 600 kubeconfig       # it holds cluster-admin credentials
+umask 077                  # it holds cluster-admin credentials
+# Write to a temp file first: if the login fails, `> kubeconfig` would leave it empty.
+vagrant ssh kyl-cp1 -c "sudo cat /etc/kubernetes/admin.conf" > kubeconfig.new \
+  && grep -q client-key-data kubeconfig.new && mv kubeconfig.new kubeconfig
 export KUBECONFIG=$PWD/kubeconfig
 kubectl get nodes          # kyl-cp1 NotReady: expected, no CNI yet
 ```
 
-> **Over a Wi-Fi bridge, `mbp` itself cannot reach the VIP.** Other LAN devices can.
-> VirtualBox's Wi-Fi bridging answers ARP only for each VM's own address, so from the
-> host `192.168.1.10` stays `(incomplete)` and kubectl times out. Run kubectl from
-> another LAN machine with the same `kubeconfig` and `/etc/hosts` line, or bridge to
-> Ethernet instead. For a quick check from `mbp`, skip the VIP:
-> `kubectl --server https://192.168.1.11:6443 get nodes`.
+> **Over a Wi-Fi bridge, `mbp` itself cannot reach the VIP**, and can lose ARP for
+> individual VMs too. Other LAN devices are fine. VirtualBox's Wi-Fi bridging rewrites MAC
+> addresses, so from the host an address can stay `(incomplete)` in `arp -n` and kubectl
+> times out. Run kubectl from another LAN machine with the same `kubeconfig` and
+> `/etc/hosts` line, or bridge to Ethernet instead. On `mbp`, point the kubeconfig
+> straight at a control plane it can still reach. Every apiserver cert lists its own IP:
+> ```bash
+> arp -n 192.168.1.12                                        # a MAC, not (incomplete)
+> kubectl config set-cluster kubernetes --server https://192.168.1.12:6443
+> ```
+> **If kubectl tries `localhost:8080`, the kubeconfig is empty or missing.** Fetch it
+> again with the commands above.
 
 **Join kyl-cp2 and kyl-cp3.** Use the `--control-plane` command from `init.out`,
 adding each node's own LAN IP:
@@ -182,7 +192,9 @@ cilium status --wait
 
 Key values in `manifests/cilium-values.yaml`:
 - `kubeProxyReplacement: true`
-- `k8sServiceHost: 192.168.1.10` (the VIP)
+- `k8sServiceHost: 192.168.1.10` (the VIP). It must be an IP, because the agent starts
+  before CoreDNS. If the operator crash-loops with `x509: certificate is valid for …
+  not 192.168.1.10`, the apiserver certs lack that SAN: see `certSANs` in Lesson 0002.
 - `ipam.mode: kubernetes`. Cilium's default pod range overlaps the NAT network.
 - `l2announcements` on, ready for the next lesson.
 
