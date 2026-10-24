@@ -36,10 +36,10 @@ defaults
 
 frontend k8s-api
     bind *:${API_PORT}
-    default_backend k8s-api
+    default_backend k8s-apiservers
 
 # /readyz is readable anonymously, so the health check needs no credentials.
-backend k8s-api
+backend k8s-apiservers
     balance roundrobin
     option httpchk
     http-check send meth GET uri /readyz
