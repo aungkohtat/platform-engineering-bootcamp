@@ -60,7 +60,8 @@ systemctl restart containerd
 systemctl enable containerd
 
 # Pin the exact patch so kubeadm, kubelet and the control plane images all agree.
-PKG_VERSION=$(apt-cache madison kubeadm | awk -v v="$K8S_VERSION" '$3 ~ "^"v"-" {print $3; exit}')
+# No early `exit` in awk: it would SIGPIPE apt-cache and fail the pipeline under pipefail.
+PKG_VERSION=$(apt-cache madison kubeadm | awk -v v="$K8S_VERSION" '!f && $3 ~ "^"v"-" {print $3; f=1}')
 [[ -n "$PKG_VERSION" ]] || {
     echo "kubeadm ${K8S_VERSION} not found in ${K8S_MINOR} repo" >&2
     exit 1

@@ -8,7 +8,8 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get install -y -q keepalived
 
 # The interface holding the LAN IP. Look it up rather than hardcoding enp0s8.
-IFACE=$(ip -o -4 addr show | awk -v ip="$NODE_IP" '$4 ~ "^"ip"/" {print $2; exit}')
+# No early `exit` in awk: it can SIGPIPE `ip` and fail the pipeline under pipefail.
+IFACE=$(ip -o -4 addr show | awk -v ip="$NODE_IP" '!f && $4 ~ "^"ip"/" {print $2; f=1}')
 [[ -n "$IFACE" ]] || {
     echo "no interface has ${NODE_IP}" >&2
     exit 1
