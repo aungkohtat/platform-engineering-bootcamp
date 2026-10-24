@@ -1,0 +1,5 @@
+.vagrant/
+# admin kubeconfig: cluster-admin client cert
+kubeconfig
+# kubeadm join output: bootstrap token and the certificate key that decrypts the CA
+*.join
