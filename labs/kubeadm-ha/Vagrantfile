@@ -97,6 +97,7 @@ Vagrant.configure("2") do |config|
         m.vm.provision "kubeadm-config", type: "shell", path: "scripts/kubeadm-config.sh",
           env: {
             "NODE_IP"     => n[:ip],
+            "VIP"         => VIP,
             "VIP_NAME"    => VIP_NAME,
             "K8S_VERSION" => K8S_VERSION,
             "API_PORT"    => API_PORT,

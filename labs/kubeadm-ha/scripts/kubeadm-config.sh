@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # kyl-cp1 only: write the kubeadm config used once by `kubeadm init`.
 # Generated here so the IPs and version come from the Vagrantfile alone.
-# Inputs: NODE_IP, VIP_NAME, K8S_VERSION, API_PORT (HAProxy's port on the VIP).
+# Inputs: NODE_IP, VIP, VIP_NAME, K8S_VERSION, API_PORT (HAProxy's port on the VIP).
 set -euo pipefail
 
 cat >/home/vagrant/kubeadm-config.yaml <<EOF
@@ -23,6 +23,11 @@ kind: ClusterConfiguration
 kubernetesVersion: v${K8S_VERSION}
 # HAProxy on the VIP, not an apiserver: every client is spread over all three.
 controlPlaneEndpoint: "${VIP_NAME}:${API_PORT}"
+apiServer:
+  # kubeadm only adds the endpoint's name. Cilium reaches the API by the VIP's IP,
+  # because its agent starts before CoreDNS and doesn't read /etc/hosts.
+  certSANs:
+    - ${VIP}
 networking:
   # Must not overlap VirtualBox NAT (10.0.2.0/24) or the LAN.
   podSubnet: 10.244.0.0/16
