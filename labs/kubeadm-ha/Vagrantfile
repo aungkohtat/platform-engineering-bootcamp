@@ -18,11 +18,11 @@ K8S_VERSION = ENV.fetch("K8S_VERSION", "1.36.5")  # newest minor Cilium 1.20 and
 #   VBoxManage list bridgedifs | grep ^Name
 BRIDGE = ENV["BRIDGE"] ? [ENV["BRIDGE"]] : ["en0: Wi-Fi", "en0: Wi-Fi (AirPort)"]
 
-# ~18 GB total: sized for a 32 GB host. The course suggests 4 GB / 8 GB, which needs 36 GB.
+# ~21 GB total: sized for a 32 GB host. The course suggests 4 GB / 8 GB, which needs 36 GB.
 CP_CPUS   = ENV.fetch("CP_CPUS", "2").to_i
 CP_MEMORY = ENV.fetch("CP_MEMORY", "3072").to_i
 WK_CPUS   = ENV.fetch("WK_CPUS", "2").to_i
-WK_MEMORY = ENV.fetch("WK_MEMORY", "3072").to_i
+WK_MEMORY = ENV.fetch("WK_MEMORY", "4096").to_i
 
 # Optional Beszel agent on every node, enabled once BESZEL_TOKEN is set. On the hub host the key is
 #   ssh-keygen -y -f ~/.local/beszel/beszel_data/id_ed25519

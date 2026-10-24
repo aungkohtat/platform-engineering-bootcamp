@@ -45,7 +45,10 @@ echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.
     >/etc/apt/sources.list.d/kubernetes.list
 
 apt-get update -q
+apt-mark unhold containerd.io >/dev/null 2>&1 || true
 apt-get install -y -q containerd.io
+# Hold it so an unattended upgrade can't move the runtime out from under the cluster.
+apt-mark hold containerd.io
 
 # containerd.io ships with the CRI plugin disabled; regenerate the full default config
 # and switch runc to the systemd cgroup driver to match the kubelet.

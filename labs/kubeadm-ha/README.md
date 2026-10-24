@@ -25,8 +25,8 @@ LAN. Envoy Gateway serves as ingress on top.
 | Envoy Gateway | v1.9.2 |
 
 **How this lab differs from the course:**
-- **Sizing.** VMs are 2 vCPU / 3 GB each, about 18 GB in total. The course suggests 4 GB
-  control planes and 8 GB workers, which needs 36 GB.
+- **Sizing.** Control planes are 2 vCPU / 3 GB and workers 2 vCPU / 4 GB, about 21 GB in
+  total. The course suggests 4 GB control planes and 8 GB workers, which needs 36 GB.
 - **Interfaces.** Each VM also has a VirtualBox NAT adapter for internet access. So
   kubelet, kubeadm and Cilium are pinned to the LAN IP.
 - **keepalived** uses unicast VRRP with no password. The script is a single `curl -f`
@@ -73,7 +73,8 @@ vagrant up            # 6 VMs, 10–15 min
 ```
 
 Every node gets swap off, `overlay` and `br_netfilter`, sysctls, and containerd 2.x
-with the systemd cgroup driver. It also gets pinned kubelet, kubeadm and kubectl, and
+with the systemd cgroup driver, held like the course's step 8 (the package is
+`containerd.io` from Docker's repo). It also gets pinned kubelet, kubeadm and kubectl, and
 `--node-ip` set to its LAN IP. The control planes also get keepalived.
 
 **Check your win:**
