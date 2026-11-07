@@ -1,6 +1,4 @@
----
-title: "06 · OpenBao"
----
+# 01 · Cilium
 
 **Status:** not started · **Session dates:** yyyy-mm-dd
 

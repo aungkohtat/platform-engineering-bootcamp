@@ -1,6 +1,4 @@
----
-title: "03 · GitLab"
----
+# 00 · Kubernetes
 
 **Status:** not started · **Session dates:** yyyy-mm-dd
 

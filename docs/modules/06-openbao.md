@@ -1,6 +1,4 @@
----
-title: "09 · Backstage"
----
+# 06 · OpenBao
 
 **Status:** not started · **Session dates:** yyyy-mm-dd
 

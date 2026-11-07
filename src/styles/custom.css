@@ -1,8 +1,0 @@
-/* Wider content column for tables and diagrams */
-:root {
-  --sl-content-width: 52rem;
-}
-.mermaid {
-  display: flex;
-  justify-content: center;
-}

@@ -1,6 +1,4 @@
----
-title: "02 · FluxCD"
----
+# 08 · OpenTelemetry + LGTM
 
 **Status:** not started · **Session dates:** yyyy-mm-dd
 

@@ -1,6 +1,4 @@
----
-title: "00 · Kubernetes"
----
+# 09 · Backstage
 
 **Status:** not started · **Session dates:** yyyy-mm-dd
 

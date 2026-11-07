@@ -1,6 +1,4 @@
----
-title: "01 · Cilium"
----
+# 05 · Kyverno
 
 **Status:** not started · **Session dates:** yyyy-mm-dd
 
