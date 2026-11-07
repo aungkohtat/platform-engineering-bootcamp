@@ -1,6 +1,10 @@
-# 06 · OpenBao
+# Day N · <Topic>
 
-**Status:** not started · **Session dates:** yyyy-mm-dd
+**Date:** yyyy-mm-dd · **Course:** Phase X, lessons NNNN–NNNN · **Status:** notes to write
+
+**Lab:** <link or none>
+
+**Win:** <the lesson's win>
 
 ## What I built
 
@@ -18,7 +22,9 @@
 
 <!-- One failure I caused on purpose, what it looked like, how I fixed it. -->
 
-## Compared with what I run at work
+## My thinking
+
+<!-- Trade-offs, what the course glosses over, how it compares with what I run at work. -->
 
 <!-- e.g. Flux vs ArgoCD, Cilium vs Istio. Trade-offs, not company details. -->
 

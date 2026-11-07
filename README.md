@@ -5,43 +5,51 @@ at a time, during a Platform Engineering Bootcamp (Oct 2026 – May 2027).
 
 Everything here is my own work. Course slides and instructor material are not published.
 
-Notes are plain Markdown in [`docs/`](docs/), read directly on GitHub. Start with
-[What is platform engineering?](docs/00-intro-platform-engineering.md).
+Notes are plain Markdown in [`docs/days/`](docs/days/), one page per session, read
+directly on GitHub. Start with [Day 1](docs/days/day-01-intro.md).
 
-## How the platform fits together
+## Course
+
+The bootcamp runs in phases. Each phase pairs concepts with a hands-on build, and each
+day page below has my notes, the commands I ran, and my own thinking on the topic.
 
 ```mermaid
-flowchart TB
-    Dev[Developers] --> Portal[09 Backstage]
-    Portal --> SCM[03 GitLab CI]
-    SCM --> GitOps[02 FluxCD]
-    GitOps --> K8s[00 Kubernetes + 01 Cilium]
-    IAM[04 Keycloak] -. SSO .-> Portal
-    IAM -. SSO .-> SCM
-    Policy[05 Kyverno] --> K8s
-    Secrets[06 OpenBao] --> K8s
-    Runtime[07 Falco] --> K8s
-    K8s --> Obs[08 OTel + LGTM]
+flowchart TD
+  P0[Phase 0 · Thinking in platforms] --> P1[Phase 1 · Compute foundation]
+  P1 --> P2[Phase 2 · Platform control plane]
+  P2 --> P3[Phase 3 · Cross-cutting capabilities]
+  P3 --> P4[Phase 4 · Observability and security ops]
+  P2 --> P4
+  P3 --> P5[Phase 5 · Portal and golden paths]
+  P4 --> P5
+  P5 --> P6[Phase 6 · Operate as a product]
+  P5 --> C[Capstone · Minimum Viable Platform]
+  P6 --> C
 ```
-
-## Modules
 
 ⬜ not started · 🟨 in progress · ✅ done
 
-| Status | Module | Topic |
-|--------|--------|-------|
-| ⬜ | [00 · Kubernetes](docs/modules/00-kubernetes.md) | Cluster foundation |
-| ⬜ | [01 · Cilium](docs/modules/01-cilium.md) | eBPF networking and service mesh |
-| ⬜ | [02 · FluxCD](docs/modules/02-fluxcd.md) | GitOps continuous delivery |
-| ⬜ | [03 · GitLab](docs/modules/03-gitlab.md) | Source control and CI |
-| ⬜ | [04 · Keycloak](docs/modules/04-keycloak.md) | Identity and SSO |
-| ⬜ | [05 · Kyverno](docs/modules/05-kyverno.md) | Policy as code |
-| ⬜ | [06 · OpenBao](docs/modules/06-openbao.md) | Secrets management |
-| ⬜ | [07 · Falco](docs/modules/07-falco.md) | Runtime security |
-| ⬜ | [08 · OpenTelemetry + LGTM](docs/modules/08-otel-lgtm.md) | Loki, Grafana, Tempo, Mimir |
-| ⬜ | [09 · Backstage](docs/modules/09-backstage.md) | Developer portal |
+| Status | Phase | Stack | Done when |
+|--------|-------|-------|-----------|
+| ✅ | 0 · Thinking in platforms | — | I can name the platform's users, value, and scope |
+| 🟨 | 1 · Compute foundation | kubeadm, Cilium, OpenEBS, Gateway API | A self-managed cluster is safe to be a platform |
+| ⬜ | 2 · Platform control plane | GitLab CI, Flux CD | Everything ships from Git through one delivery loop |
+| ⬜ | 3 · Cross-cutting capabilities | cert-manager, Keycloak, OpenBao, Kyverno | Identity, secrets, policy, and TLS reach every workload |
+| ⬜ | 4 · Observability and security ops | OpenTelemetry + LGTM, Falco | The platform is measurable and defensible in production |
+| ⬜ | 5 · Portal and golden paths | Backstage, Crossplane | A developer self-serves a new service end to end |
+| ⬜ | 6 · Operate as a product | DORA, SPACE | The platform survives its own team and keeps its users |
+| ⬜ | Capstone | — | One golden path, idea → production, measured |
 
-Module order follows the component list, not necessarily the session order.
+## Session log
+
+| Day | Date | Topic | Course |
+|-----|------|-------|--------|
+| 1 | 2026-10-17 | [Intro: what is platform engineering?](docs/days/day-01-intro.md) | — |
+| 2 | | [Thinking in platforms](docs/days/day-02-thinking-in-platforms.md) | Phase 0 · lessons 0001–0006 |
+| 3 | | [Kubernetes cluster provisioning](docs/days/day-03-k8s-cluster-provisioning.md) | Phase 1 · lessons 0001–0003 |
+| 4 | | [Cilium load balancer and kernel tuning](docs/days/day-04-cilium-lb-kernel-tuning.md) | Phase 1 · lessons 0004–0005 |
+| 5 | | [Multi-tenancy](docs/days/day-05-multi-tenancy.md) | Phase 1 · lesson 0007 |
+| 6 | 2026-11-07 | [Gateway API](docs/days/day-06-gateway-api.md) | Phase 1 · lesson 0012 |
 
 ## Labs
 
@@ -64,8 +72,8 @@ work clusters are unreachable. Machine-local overrides go in `.envrc.local` (git
 
 - **Own cluster.** Use a dedicated cluster name (e.g. `kind-bootcamp`) and confirm
   `kubectl config current-context` before every apply. Never point this repo at a work cluster.
-- **Notes after doing.** Each module page (`docs/modules/`) is filled in after the lab, from
-  the template in `templates/`. Update its status in the table above.
+- **Notes after doing.** Each session gets a page in `docs/days/`, filled in after the lab from
+  `templates/day-notes.md`. Add it to the session log and update the phase status above.
 - **No secrets in git.** `pre-commit` runs gitleaks; install with `pre-commit install`.
   OpenBao and Keycloak dev credentials stay in local env files, which are gitignored.
 - The GitOps layout (`clusters/`, `infrastructure/`, `apps/`) is added when the FluxCD module starts.

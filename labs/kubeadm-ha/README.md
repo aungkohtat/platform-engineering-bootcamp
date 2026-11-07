@@ -159,8 +159,8 @@ cilium connectivity test --cleanup
 
 ## Lesson 0004: The LAN-facing load balancer
 
-The course hasn't written this lesson yet. This section follows the Phase 1 overview
-and Cilium's L2 announcement docs.
+Follows the course lesson 0004 and Cilium's L2 announcement docs. Notes:
+[Day 4](../../docs/days/day-04-cilium-lb-kernel-tuning.md).
 
 ```bash
 kubectl apply -f manifests/cilium-lb.yaml      # pool .200–.207 + L2 policy on workers
@@ -178,6 +178,8 @@ kubectl delete svc,deploy hello
 ```
 
 ## Ingress: Envoy Gateway
+
+Notes and the Cilium Gateway comparison: [Day 6](../../docs/days/day-06-gateway-api.md).
 
 ```bash
 helm install eg oci://docker.io/envoyproxy/gateway-helm --version v1.9.2 \
