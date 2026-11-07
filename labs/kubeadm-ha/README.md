@@ -159,7 +159,7 @@ cilium connectivity test --cleanup
 
 ## Lesson 0004: The LAN-facing load balancer
 
-The course hasn't written this lesson yet. This section follows the Phase 1 overview
+Follows the course lesson [0004 - The LAN-Facing Load Balancer](https://gitlab.com/knowyourlinux/pe-bootcamp/-/blob/main/Phase%201%20-%20Compute%20Foundation/lessons/0004%20-%20The%20LAN-Facing%20Load%20Balancer.md)
 and Cilium's L2 announcement docs.
 
 ```bash

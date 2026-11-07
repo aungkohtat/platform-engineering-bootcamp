@@ -1,4 +1,4 @@
-# What is platform engineering?
+# Day 1 · What is platform engineering?
 
 _Day 1 — what platform engineering is, why it exists, and the tools an internal developer platform is built from._
 
@@ -96,19 +96,19 @@ Interaction mode between platform and stream teams should mostly be **X-as-a-Ser
 The CNCF *Platforms White Paper* (TAG App Delivery, 2023) lists the capabilities a
 platform usually provides. Mapped to this bootcamp:
 
-| Capability | Popular tools | Bootcamp module |
+| Capability | Popular tools | Course phase |
 |---|---|---|
-| Compute / orchestration | **Kubernetes**, EKS/GKE/AKS | [00](modules/00-kubernetes.md) |
-| Networking & service mesh | **Cilium**, Istio, Linkerd | [01](modules/01-cilium.md) |
-| GitOps / continuous delivery | **FluxCD**, Argo CD | [02](modules/02-fluxcd.md) |
-| Source control & CI | **GitLab**, GitHub Actions, Jenkins | [03](modules/03-gitlab.md) |
-| Identity & access | **Keycloak**, Dex, Okta | [04](modules/04-keycloak.md) |
-| Policy-as-code | **Kyverno**, OPA Gatekeeper | [05](modules/05-kyverno.md) |
-| Secrets | **OpenBao**, HashiCorp Vault, External Secrets Operator | [06](modules/06-openbao.md) |
-| Runtime security | **Falco**, Tetragon | [07](modules/07-falco.md) |
-| Observability | **OpenTelemetry**, Prometheus, Grafana, Loki, Tempo, Mimir | [08](modules/08-otel-lgtm.md) |
-| Developer portal | **Backstage**, Port, Cortex | [09](modules/09-backstage.md) |
-| Infrastructure provisioning | Terraform / OpenTofu, Crossplane, Pulumi | — |
+| Compute / orchestration | **Kubernetes**, EKS/GKE/AKS | Phase 1 |
+| Networking & service mesh | **Cilium**, Istio, Linkerd | Phase 1 |
+| GitOps / continuous delivery | **FluxCD**, Argo CD | Phase 2 |
+| Source control & CI | **GitLab**, GitHub Actions, Jenkins | Phase 2 |
+| Identity & access | **Keycloak**, Dex, Okta | Phase 3 |
+| Policy-as-code | **Kyverno**, OPA Gatekeeper | Phase 3 |
+| Secrets | **OpenBao**, HashiCorp Vault, External Secrets Operator | Phase 3 |
+| Runtime security | **Falco**, Tetragon | Phase 4 |
+| Observability | **OpenTelemetry**, Prometheus, Grafana, Loki, Tempo, Mimir | Phase 4 |
+| Developer portal | **Backstage**, Port, Cortex | Phase 5 |
+| Infrastructure provisioning | Terraform / OpenTofu, **Crossplane**, Pulumi | Phase 5 |
 | Platform orchestrator | Humanitec, Kratix, KubeVela | — |
 
 Layered view:

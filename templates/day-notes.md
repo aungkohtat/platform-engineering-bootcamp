@@ -1,6 +1,14 @@
-# 08 · OpenTelemetry + LGTM
+# Day N · <Topic>
 
-**Status:** not started · **Session dates:** yyyy-mm-dd
+**Date:** yyyy-mm-dd · **Course:** Phase X · Module X.Y · **Status:** notes to write
+
+**Course lessons:**
+
+- <lesson link>
+
+**Lab:** <link or none>
+
+**Win:** <the lesson's win>
 
 ## What I built
 

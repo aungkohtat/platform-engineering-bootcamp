@@ -1,6 +1,12 @@
-# 06 · OpenBao
+# Day 5 · Multi-tenancy
 
-**Status:** not started · **Session dates:** yyyy-mm-dd
+**Date:** yyyy-mm-dd · **Course:** Phase 1 · Module 1.2 · **Status:** notes to write
+
+**Course lessons:**
+
+- [0007 - Namespaces, RBAC, and Multi-Tenancy](https://gitlab.com/knowyourlinux/pe-bootcamp/-/blob/main/Phase%201%20-%20Compute%20Foundation/lessons/0007%20-%20Namespaces%2C%20RBAC%2C%20and%20Multi-Tenancy.md)
+
+**Win:** A least-privilege team namespace.
 
 ## What I built
 
