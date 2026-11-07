@@ -8,24 +8,105 @@ Everything here is my own work. Course slides and instructor material are not pu
 Notes are plain Markdown in [`docs/days/`](docs/days/), one page per session, read
 directly on GitHub. Start with [Day 1](docs/days/day-01-intro.md).
 
+## The full picture
+
+The platform I'm building, laid out in the five planes of the internal developer platform
+reference architecture (platformengineering.org). Each box is colored by my progress.
+
+```mermaid
+flowchart TB
+  dev(["Developers and AI agents"])
+  lan(["End users on the LAN"])
+
+  subgraph DCP["1 · Developer control plane · Phase 5"]
+    direction LR
+    portal["Backstage<br/>catalog · scaffolder · TechDocs"]
+    paths["Golden paths<br/>templates + escape hatch"]
+    xp["Crossplane<br/>self-service infra claims"]
+  end
+
+  subgraph IDL["2 · Integration and delivery plane · Phase 2"]
+    direction LR
+    scm["GitLab<br/>repos · merge requests"]
+    ci["GitLab CI<br/>build · test · SBOM"]
+    reg["Container registry"]
+    flux["Flux CD<br/>GitOps · SOPS secrets"]
+  end
+
+  subgraph SEC["3 · Security plane · Phases 3–4"]
+    direction LR
+    kc["Keycloak<br/>OIDC SSO"]
+    bao["OpenBao + ESO<br/>secrets"]
+    kyv["Kyverno<br/>admission policy"]
+    cm["cert-manager<br/>TLS"]
+    falco["Falco<br/>runtime detection"]
+  end
+
+  subgraph RES["4 · Resource plane · Phase 1"]
+    direction LR
+    gw["Gateway API<br/>HTTPRoute by hostname"]
+    lb["Cilium L2 LB<br/>LAN IP pool"]
+    cp["3× control plane<br/>kubeadm · etcd · VIP"]
+    wk["3× workers<br/>containerd · tuned kernel"]
+    net["Cilium eBPF CNI<br/>no kube-proxy"]
+    ten["Tenancy<br/>namespaces · RBAC · quotas"]
+    sto["Storage<br/>OpenEBS LocalPV · NFS"]
+  end
+
+  subgraph OBS["5 · Monitoring and logging plane · Phase 4"]
+    direction LR
+    otel["OpenTelemetry Collector"]
+    lgtm["Loki · Grafana · Tempo · Mimir"]
+    slo["SLOs · alerts · DORA"]
+  end
+
+  dev -->|self-service| portal
+  portal --> paths
+  portal --> xp
+  paths -->|new repo| scm
+  dev -->|git push| scm
+  scm --> ci --> reg
+  scm -->|desired state| flux
+  reg -->|image updates| flux
+  flux -->|reconcile| wk
+  xp -->|claims| wk
+  lan --> lb --> gw --> wk
+  cp --- wk
+  net --- wk
+  ten --- wk
+  sto --- wk
+  kc -. SSO .-> portal
+  kc -. SSO .-> scm
+  bao -. secrets .-> wk
+  kyv -. admit or deny .-> cp
+  cm -. certificates .-> gw
+  falco -. watches syscalls .-> wk
+  wk -->|metrics · logs · traces| otel --> lgtm --> slo
+  slo -. adoption and DORA .-> portal
+
+  classDef done fill:#d1fae5,stroke:#059669,color:#064e3b
+  classDef wip fill:#fef3c7,stroke:#d97706,color:#78350f
+  classDef todo fill:#f3f4f6,stroke:#9ca3af,color:#374151
+  class cp,net,lb done
+  class wk,ten,gw wip
+  class portal,paths,xp,scm,ci,reg,flux,kc,bao,kyv,cm,falco,sto,otel,lgtm,slo todo
+```
+
+🟩 built · 🟨 in progress · ⬜ not started
+
+| Plane | What it answers | Bootcamp tools |
+|---|---|---|
+| Developer control plane | Where do developers start? | Backstage, golden paths, Crossplane |
+| Integration and delivery | How does a commit reach the cluster? | GitLab + CI, registry, Flux CD |
+| Security | Who is allowed, with which secrets, under which rules? | Keycloak, OpenBao, Kyverno, cert-manager, Falco |
+| Resource | Where does it run, and how is it reached? | kubeadm HA, Cilium, Gateway API, storage, tenancy |
+| Monitoring and logging | Is it healthy, and is the platform being used? | OpenTelemetry, LGTM, SLOs, DORA |
+
 ## Course
 
 The bootcamp runs in phases. Each phase pairs concepts with a hands-on build, and each
 day page below has my notes, the commands I ran, and my own thinking on the topic.
 
-```mermaid
-flowchart TD
-  P0[Phase 0 · Thinking in platforms] --> P1[Phase 1 · Compute foundation]
-  P1 --> P2[Phase 2 · Platform control plane]
-  P2 --> P3[Phase 3 · Cross-cutting capabilities]
-  P3 --> P4[Phase 4 · Observability and security ops]
-  P2 --> P4
-  P3 --> P5[Phase 5 · Portal and golden paths]
-  P4 --> P5
-  P5 --> P6[Phase 6 · Operate as a product]
-  P5 --> C[Capstone · Minimum Viable Platform]
-  P6 --> C
-```
 
 ⬜ not started · 🟨 in progress · ✅ done
 
