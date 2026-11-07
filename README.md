@@ -10,8 +10,8 @@ directly on GitHub. Start with [Day 1](docs/days/day-01-intro.md).
 
 ## Course
 
-I follow the mentor's course map: [knowyourlinux/pe-bootcamp](https://gitlab.com/knowyourlinux/pe-bootcamp).
-It runs in phases, and each phase pairs concepts with a hands-on build.
+The bootcamp runs in phases. Each phase pairs concepts with a hands-on build, and each
+day page below has my notes, the commands I ran, and my own thinking on the topic.
 
 ```mermaid
 flowchart TD

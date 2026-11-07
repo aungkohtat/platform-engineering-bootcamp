@@ -1,10 +1,6 @@
 # Day N · <Topic>
 
-**Date:** yyyy-mm-dd · **Course:** Phase X · Module X.Y · **Status:** notes to write
-
-**Course lessons:**
-
-- <lesson link>
+**Date:** yyyy-mm-dd · **Course:** Phase X, lessons NNNN–NNNN · **Status:** notes to write
 
 **Lab:** <link or none>
 
@@ -26,7 +22,9 @@
 
 <!-- One failure I caused on purpose, what it looked like, how I fixed it. -->
 
-## Compared with what I run at work
+## My thinking
+
+<!-- Trade-offs, what the course glosses over, how it compares with what I run at work. -->
 
 <!-- e.g. Flux vs ArgoCD, Cilium vs Istio. Trade-offs, not company details. -->
 
