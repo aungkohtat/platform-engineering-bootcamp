@@ -1,6 +1,4 @@
----
-title: "NN · <Topic>"
----
+# NN · <Topic>
 
 **Status:** not started · **Session dates:** yyyy-mm-dd
 

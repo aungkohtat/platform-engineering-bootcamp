@@ -1,6 +1,4 @@
----
-title: "05 · Kyverno"
----
+# 03 · GitLab
 
 **Status:** not started · **Session dates:** yyyy-mm-dd
 
