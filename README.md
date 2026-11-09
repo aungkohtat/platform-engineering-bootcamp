@@ -131,7 +131,7 @@ day page below has my notes, the commands I ran, and my own thinking on the topi
 | 4 | | [Cilium load balancer and kernel tuning](docs/days/day-04-cilium-lb-kernel-tuning.md) | Phase 1 · lessons 0004–0005 |
 | 5 | | [Multi-tenancy](docs/days/day-05-multi-tenancy.md) | Phase 1 · lesson 0007 |
 | 6 | 2026-11-07 | [Gateway API](docs/days/day-06-gateway-api.md) | Phase 1 · lesson 0012 |
-| 7 | 2026-11-08 | [Sizing for production](docs/days/day-07-sizing-for-production.md) | Phase 1 |
+| 7 | 2026-11-08 | [Sizing for production](docs/days/day-07-sizing-for-production.md) | Phase 1 · lesson 0013 |
 
 ## Labs
 
