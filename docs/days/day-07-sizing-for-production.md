@@ -393,7 +393,9 @@ kubectl get node kyl-w1 -o jsonpath='{.status.allocatable}{"\n"}'
 - HA topology options: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/ha-topology/
 - Reserve compute resources: https://kubernetes.io/docs/tasks/administer-cluster/reserve-compute-resources/
 - Pod QoS classes: https://kubernetes.io/docs/concepts/workloads/pods/pod-qos/
-- etcd hardware: https://etcd.io/docs/v3.5/op-guide/hardware/
-- etcd maintenance (compaction, defrag, quota): https://etcd.io/docs/v3.5/op-guide/maintenance/
-- etcd FAQ, cluster size: https://etcd.io/docs/v3.5/faq/
+- etcd hardware: https://etcd.io/docs/v3.6/op-guide/hardware/
+- etcd maintenance (compaction, defrag, quota): https://etcd.io/docs/v3.6/op-guide/maintenance/
+- etcd FAQ, cluster size: https://etcd.io/docs/v3.6/faq/
 - GKE node sizing: https://cloud.google.com/kubernetes-engine/docs/concepts/plan-node-sizes
+- Cluster Autoscaler: https://github.com/kubernetes/autoscaler
+- Karpenter: https://karpenter.sh
